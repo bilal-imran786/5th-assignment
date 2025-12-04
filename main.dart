@@ -1,91 +1,190 @@
+// main.dart
+// Full Single-File Restaurant Management System
+// According to assignment instructions (Menu → Submenu → Function Calling)
+
+// ignore: unused_import
+import 'dart:ffi';
+import 'dart:io';
+
+// Menu Item Model
+class MenuItem {
+  String name;
+  double price;
+
+  MenuItem(this.name, this.price);
+}
+
+// Order Model
+class Order {
+  String customerName;
+  List<MenuItem> items = [];
+  double total = 0;
+
+  Order(this.customerName);
+}
+
+// Global restaurant menu
+List<MenuItem> menu = [
+  MenuItem("Burger", 350),
+  MenuItem("Pizza", 900),
+  MenuItem("Fries", 150),
+  MenuItem("Sandwich", 250),
+  MenuItem("Drink", 120),
+];
+
+List<Order> orders = [];
+
 void main() {
-  // Q 1
-  print("Q1");
-  int limit = 10;
+  while (true) {
+    print("\n============ Restaurant Management System ============");
+    print("1) Manage Menu");
+    print("2) Take Order");
+    print("3) View All Orders");
+    print("4) Search Order");
+    print("5) Delete Order");
+    print("6) Exit");
+    stdout.write("\nEnter option: ");
 
-  int a = 0;
-  int b = 1;
+    String? choice = stdin.readLineSync();
 
-  print(a);
-  print(b);
-
-  for (int i = 2; i <= limit; i++) {
-    int c = a + b;
-    if (c > limit) {
-      break;
-    }
-    print(c);
-    a = b;
-    b = c;
-  }
-  // Q2
-  print("Q2");
-
-  List numbers = [3, 9, 1, 6, 4, 2, 8, 5, 7];
-
-  int largest = numbers[0];
-
-  for (int i = 1; i < numbers.length; i++) {
-    if (numbers[i] > largest) {
-      largest = numbers[i];
-    }
-  }
-
-  print("Largest element:");
-  print(largest);
-  // Q3
-  print("Q3");
-
-  int table = 5;
-  for (int i = 1; i <= 10; i++) {
-    print("$table x $i = ${table * i}");
-  }
-
-  // Q4
-  print("Q4");
-
-  String text = "radar";
-  String reverse = "";
-
-  for (int i = text.length - 1; i >= 0; i--) {
-    reverse = reverse + text[i];
-  }
-
-  if (text == reverse) {
-    print('"$text" is a palidrome');
-  } else {
-    print('"$text" is not a palidrome');
-
-    print("Q5");
-  }
-  for (int i = 1; i <= 4; i++) {
-    String row = '';
-
-    for (int j = 1; j <= i; j++) {
-      row += i.toString();
-    }
-
-    print(row);
-  }
-  print("Q6");
-  List<int> number = [2, 7, 4, 9, 1, 6];
-
-  for (int i = 0; i < numbers.length; i++) {
-    if (number[i] > 5) {
-      print(numbers[i]);
+    switch (choice) {
+      case '1':
+        manageMenu();
+        break;
+      case '2':
+        takeOrder();
+        break;
+      case '3':
+        vieworders();
+        break;
+      case '4':
+        searchOrders();
+        break;
+      case '5':
+        deleteOrders();
+        break;
+      case '6':
+        print("Exiting Program...");
+        return;
+      default:
+        print("Invalid selection! Try again.");
     }
   }
-  print("Q7");
-  String istext = "hello world";
-  int vowelCount = 0;
+}
 
-  for (int i = 0; i < istext.length; i++) {
-    String ch = text[i].toLowerCase();
+void vieworders() {
+}
 
-    if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
-      vowelCount++;
+void searchOrders() {
+}
+
+void deleteOrders() {
+}
+
+//////////////////////////////////////////////////////////////
+//                  MANAGE MENU SECTION
+//////////////////////////////////////////////////////////////
+void manageMenu() {
+  while (true) {
+    print("\n---------- Manage Menu ----------");
+    print("1) View Menu");
+    print("2) Add New Item");
+    print("3) Update Item");
+    print("4) Delete Item");
+    print("5) Back to Main Menu");
+
+    stdout.write("Enter choice: ");
+    String? choice = stdin.readLineSync();
+
+    switch (choice) {
+      case '1':
+        viewMenu();
+        break;
+      case '2':
+        addMenuItem();
+        break;
+      case '3':
+        updateMenuItem();
+        break;
+      case '4':
+        deleteMenuItem();
+        break;
+      case '5':
+        return;
+      default:
+        print("Invalid option. Try again.");
     }
-
-    print("Total vowels: $vowelCount");
   }
+}
+
+void viewMenu() {
+  print("\n======= Restaurant Menu =======");
+  for (int i = 0; i < menu.length; i++) {
+    print("${i + 1}) ${menu[i].name} - Rs ${menu[i].price}");
+  }
+}
+
+void addMenuItem() {
+  stdout.write("Enter new item name: ");
+  String name = stdin.readLineSync() ?? "";
+
+  stdout.write("Enter price: ");
+  double? price = double.tryParse(stdin.readLineSync() ?? "");
+
+  if (name.isEmpty || price == null || price <= 0) {
+    print("Invalid input.");
+    return;
+  }
+
+  menu.add(MenuItem(name, price));
+  print("Item added successfully.");
+}
+
+void updateMenuItem() {
+  viewMenu();
+  stdout.write("Enter item number to update: ");
+  int? index = int.tryParse(stdin.readLineSync() ?? "");
+
+  if (index == null || index < 1 || index > menu.length) {
+    print("Invalid item number.");
+    return;
+  }
+
+  MenuItem selectedItem = menu[index - 1];
+
+  stdout.write("Enter new name (${selectedItem.name}): ");
+  String name = stdin.readLineSync() ?? selectedItem.name;
+
+  stdout.write("Enter new price (${selectedItem.price}): ");
+  double? price = double.tryParse(stdin.readLineSync() ?? "");
+
+  if (price == null || price <= 0) price = selectedItem.price;
+
+  selectedItem.name = name.isNotEmpty ? name : selectedItem.name;
+  selectedItem.price = price;
+
+  print("Item updated successfully!");
+}
+
+void deleteMenuItem() {
+  viewMenu();
+  stdout.write("Enter item number to delete: ");
+  int? index = int.tryParse(stdin.readLineSync() ?? "");
+
+  if (index == null || index < 1 || index > menu.length) {
+    print("Invalid item number.");
+    return;
+  }
+
+  menu.removeAt(index - 1);
+  print("Item deleted successfully!");
+}
+
+//////////////////////////////////////////////////////////////
+//                  ORDER SECTION
+//////////////////////////////////////////////////////////////
+void takeOrder() {
+  stdout.write("Enter customer name: ");
+  String customerName = stdin.readLineSync() ?? "";
+  if (customerName.isEmpty) ;
 }
